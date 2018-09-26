@@ -5,6 +5,7 @@ import Forecast from "./Forecast";
 export default class Weather extends React.Component {
   constructor(props) {
     super(props);
+    this.APPID = "886705b4c1182eb1c69f28eb8c520e20";
     this.state = {
       forecast: {
         main: "main",
@@ -13,6 +14,31 @@ export default class Weather extends React.Component {
       }
     };
   }
+
+  componentDidMount = () => this.fetchData();
+
+  fetchData = () => {
+    fetch(
+      `http://api.openweathermap.org/data/2.5/weather?q=${
+        this.props.zipCode
+      },th&units=metric&APPID=${this.APPID}`
+    )
+      .then(response => {
+        return response.json();
+      })
+      .then(json => {
+        this.setState({
+          forecast: {
+            main: json.weather[0].main,
+            description: json.weather[0].description,
+            temp: json.main.temp
+          }
+        });
+      })
+      .catch(error => {
+        console.warn(error);
+      });
+  };
   render() {
     return (
       <View style={styles.container}>
@@ -34,10 +60,10 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    backgroundColor: 'rgba(0,0,0,0.8)'
+    backgroundColor: "rgba(0,0,0,0.8)"
   },
   font: {
-    color: 'white',
+    color: "white",
     paddingTop: 25,
     fontSize: 18
   }
